@@ -1,9 +1,0 @@
-target
-.git
-.gitignore
-README.md
-*.log
-*.iml
-.idea
-.vscode
-.DS_Store
