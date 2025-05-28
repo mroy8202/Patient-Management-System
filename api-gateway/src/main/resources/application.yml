@@ -1,12 +1,16 @@
-#server:
-#  port: 4004 # Gateway listens on port 4004
 server:
-  port: 4004
+  port: 4004 # Gateway listens on port 4004
 
 spring:
   cloud:
     gateway:
       routes:
+        - id: auth-service-route
+          uri: http://auth-service:4005
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
 
         # Route for /api/patients/** to patient-service
         - id: patient-service-route
@@ -15,6 +19,7 @@ spring:
             - Path=/api/patients/**
           filters:
             - StripPrefix=1
+            - JwtValidation
 
           ## REST CLIENT -> http://localhost:4004/api/patients
           ## API GATEWAY -> http://patient-service:4000/patients
@@ -29,3 +34,11 @@ spring:
 
           ## REST CLIENT -> http://localhost:4004/api-docs/patients
           ## API GATEWAY -> http://patient-service:4000/v3/api-docs
+
+
+        - id: api-docs-auth-route
+          uri: http://auth-service:4005
+          predicates:
+            - Path=/api-docs/auth
+          filters:
+            - RewritePath=/api-docs/auth,/v3/api-docs
